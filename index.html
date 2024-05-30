@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - A Pen by Corentin Lafont</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion ou Inscription</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Bebas Neue', sans-serif;
+            margin: 0;
+            background-image: url('https://www.example.com/background-bike.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #444;
+        }
+        .container form {
+            display: none;
+        }
+        .container form.active {
+            display: block;
+        }
+        .container input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .container button:hover {
+            background-color: #333;
+        }
+        .switch-button {
+            margin: 20px 0;
+            cursor: pointer;
+            color: #444;
+            text-decoration: underline;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .terms {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .terms input {
+            width: auto;
+            margin-right: 10px;
+        }
+        .loading-wheel {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 8px solid #ddd;
+            border-top: 8px solid #444;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+    <script>
+        function switchForm(formId) {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('code-form').classList.remove('active');
+            document.getElementById('captcha-phone-form').classList.remove('active');
+            document.getElementById('profile-pic-form').classList.remove('active');
+            document.getElementById('finalize-form').classList.remove('active');
+            document.getElementById(formId).classList.add('active');
+            document.getElementById('form-title').innerText = formId === 'login-form' ? 'Connexion' : 'Inscription';
+        }
+
+        function showCodeForm(event) {
+            event.preventDefault();
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('code-form').classList.add('active');
+        }
+
+        function validateCode(event) {
+            event.preventDefault();
+            const validCodes = ['6301', '6399', '6335'];
+            const userCode = document.getElementById('code-input').value;
+            if (validCodes.includes(userCode)) {
+                switchForm('captcha-phone-form');
+            } else {
+                document.getElementById('error-message').innerText = 'Code invalide. Veuillez réessayer.';
+            }
+        }
+
+        function validateCaptchaAndPhone(event) {
+            event.preventDefault();
+            // Assuming CAPTCHA and phone verification are successful
+            switchForm('profile-pic-form');
+        }
+
+        function submitProfilePic(event) {
+            event.preventDefault();
+            switchForm('finalize-form');
+        }
+
+        function finalizeRegistration(event) {
+            event.preventDefault();
+            const termsAccepted = document.getElementById('terms').checked;
+            if (!termsAccepted) {
+                alert('Vous devez accepter les conditions générales pour continuer.');
+                return;
+            }
+            document.getElementById('loading-wheel').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('loading-wheel').style.display = 'none';
+                alert('Inscription complète ! Votre compte a été créé.');
+            }, 2000); // Simule un délai pour le processus de création du compte
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="form-title">Connexion</h1>
+        <form id="login-form" class="active">
+            <input type="text" placeholder="Nom d'utilisateur" required>
+            <input type="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+            <div class="switch-button" onclick="switchForm('signup-form')">Pas encore inscrit ? Inscrivez-vous</div>
+        </form>
+        <form id="signup-form" onsubmit="showCodeForm(event)">
+            <input type="text" placeholder="Nom d'utilisateur" required>
+            <input type="password" placeholder="Mot de passe" required>
+            <input type="email" placeholder="Adresse Gmail" required>
+            <button type="submit">S'inscrire</button>
+            <div class="switch-button" onclick="switchForm('login-form')">Déjà inscrit ? Connectez-vous</div>
+        </form>
+        <form id="code-form" onsubmit="validateCode(event)">
+            <input type="text" id="code-input" placeholder="Code à 4 chiffres" required pattern="\d{4}">
+            <button type="submit">Valider</button>
+            <div id="error-message" class="error"></div>
+        </form>
+        <form id="captcha-phone-form" onsubmit="validateCaptchaAndPhone(event)">
+            <div>Veuillez vérifier que vous n'êtes pas un robot :</div>
+            <!-- Ici, vous pouvez intégrer un CAPTCHA tel que Google reCAPTCHA -->
+            <div style="margin: 20px 0;">
+                <button type="button" onclick="alert('Vérification CAPTCHA réussie')">Vérifier CAPTCHA</button>
+            </div>
+            <div>Entrez le code reçu par SMS :</div>
+            <input type="text" placeholder="Code SMS" required pattern="\d{4}">
+            <button type="submit">Valider</button>
+        </form>
+        <form id="profile-pic-form" onsubmit="submitProfilePic(event)">
+            <div>Choisissez une photo de profil :</div>
+            <input type="file" accept="image/*" required>
+            <button type="submit">Télécharger</button>
+        </form>
+        <form id="finalize-form" onsubmit="finalizeRegistration(event)">
+            <div class="terms">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">J'accepte les conditions générales</label>
+            </div>
+            <button type="submit">Valider l'inscription</button>
+        </form>
+        <div id="loading-wheel" class="loading-wheel"></div>
+    </div>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
